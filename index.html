@@ -444,7 +444,7 @@
   /* ─── Toast ─── */
   .toast {
     position: fixed;
-    bottom: 100px;
+    top: 80px;
     left: 50%;
     transform: translateX(-50%);
     background: var(--bg-deep);
@@ -464,7 +464,288 @@
   }
   .toast.show { opacity: 1; }
 
+  /* ─── Processing cancel × button ─── */
+  .processing .cancel {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--cream);
+    font-size: 22px;
+    line-height: 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .processing .cancel:active {
+    background: rgba(255, 255, 255, 0.20);
+  }
+
+  /* ─── Error overlay (replaces auto-dismissing toast for major failures) ─── */
+  .error-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg-darker);
+    z-index: 300;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 32px 24px;
+    text-align: center;
+  }
+  .error-overlay.show { display: flex; }
+
+  .err-stamp {
+    display: inline-block;
+    padding: 14px 28px;
+    font-family: 'Bungee', cursive;
+    font-size: 40px;
+    line-height: 1;
+    letter-spacing: 0.05em;
+    border-radius: 8px;
+    transform: rotate(-3deg);
+    background: var(--pink-hot);
+    color: var(--yellow);
+    text-shadow:
+      2px 2px 0 var(--bg-deep),
+      0 0 18px rgba(255, 238, 0, 0.5);
+    box-shadow:
+      0 8px 0 #77002F,
+      0 14px 18px rgba(0, 0, 0, 0.55),
+      0 0 28px rgba(255, 45, 119, 0.55),
+      inset 0 2px 0 rgba(255, 255, 255, 0.35),
+      inset 0 -3px 0 rgba(0, 0, 0, 0.30);
+    margin-bottom: 24px;
+    animation: stampIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .err-msg {
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: var(--yellow);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    max-width: 300px;
+    line-height: 1.3;
+  }
+
+  .err-actions {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-width: 320px;
+  }
+  .err-btn {
+    flex: 1;
+    min-height: 56px;
+    border-radius: 12px;
+    font-family: 'Bungee', cursive;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    padding: 12px 8px;
+    line-height: 1.1;
+    cursor: pointer;
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .err-btn.retry {
+    flex: 2;
+    background: var(--yellow);
+    color: var(--bg-deep);
+    box-shadow:
+      0 6px 0 var(--yellow-warm),
+      0 10px 16px rgba(0, 0, 0, 0.45),
+      inset 0 2px 0 rgba(255, 255, 255, 0.45),
+      inset 0 -2px 0 rgba(0, 0, 0, 0.18);
+  }
+  .err-btn.retry:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 var(--yellow-warm), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  .err-btn.dismiss {
+    background: transparent;
+    color: var(--cream);
+    border: 2px solid rgba(255, 248, 231, 0.4);
+  }
+  .err-btn.dismiss:active {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .err-btn:focus-visible {
+    outline: 2px solid var(--yellow);
+    outline-offset: 4px;
+  }
+
   .hidden { display: none !important; }
+
+  /* ─── v0.2 polish: skeuomorphism + retro-futurism hybrid ─────────── */
+
+  /* Accessibility — kill all infinite motion when user asks */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* CRT scanlines — sits above everything, faint horizontal lines, like
+     looking at the game show through an old TV monitor. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999;
+    background-image: repeating-linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.20) 0px,
+      rgba(0, 0, 0, 0.20) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    mix-blend-mode: multiply;
+    opacity: 0.55;
+  }
+
+  /* Film grain — SVG noise overlay, kills the AI-flat look + adds
+     tactile texture without measurable perf cost. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 998;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.35;
+    mix-blend-mode: overlay;
+  }
+
+  /* Title — stack 3 relief drop-shadows for chunky game-show signage */
+  .title {
+    /* Override the existing single drop-shadow with a layered stack */
+    filter:
+      drop-shadow(0 1px 0 rgba(255, 255, 255, 0.50))
+      drop-shadow(0 3px 0 var(--pink-hot))
+      drop-shadow(0 6px 0 #770037)
+      drop-shadow(0 8px 18px rgba(0, 0, 0, 0.55))
+      drop-shadow(0 0 22px rgba(255, 238, 0, 0.45));
+  }
+
+  /* Shutter — chrome bezel ring + better tactile press */
+  .shutter {
+    box-shadow:
+      0 14px 0 var(--pink-hot),
+      0 22px 28px rgba(0, 0, 0, 0.55),
+      0 0 50px rgba(255, 45, 119, 0.6),
+      0 0 0 2px rgba(255, 248, 231, 0.18),
+      inset 0 -14px 22px rgba(0, 0, 0, 0.35),
+      inset 0 8px 18px rgba(255, 255, 255, 0.3);
+  }
+  .shutter:active {
+    transform: translateY(10px);
+    box-shadow:
+      0 4px 0 var(--pink-hot),
+      0 8px 16px rgba(0, 0, 0, 0.5),
+      0 0 30px rgba(255, 45, 119, 0.45),
+      0 0 0 2px rgba(255, 248, 231, 0.18),
+      inset 0 -10px 18px rgba(0, 0, 0, 0.4),
+      inset 0 6px 14px rgba(255, 255, 255, 0.25);
+  }
+
+  /* Photo frame — shimmer plays ONCE on appear (was infinite, too
+     distracting per UX heuristic on continuous animation) + inner
+     vignette for depth */
+  .photo-frame::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.45) 100%);
+    z-index: 2;
+  }
+  .photo-frame::after {
+    animation: shimmer 1.8s ease-out 0.35s 1 forwards;
+  }
+
+  /* Stamp — add letterpress emboss on top of the existing neon glow */
+  .verdict .stamp.toss {
+    box-shadow:
+      0 8px 0 #99004D,
+      0 14px 18px rgba(0, 0, 0, 0.55),
+      0 0 28px rgba(255, 45, 119, 0.7),
+      inset 0 2px 0 rgba(255, 255, 255, 0.35),
+      inset 0 -3px 0 rgba(0, 0, 0, 0.30);
+  }
+  .verdict .stamp.keep {
+    box-shadow:
+      0 8px 0 var(--blue-deep),
+      0 14px 18px rgba(0, 0, 0, 0.55),
+      0 0 28px rgba(0, 181, 255, 0.7),
+      inset 0 2px 0 rgba(255, 255, 255, 0.35),
+      inset 0 -3px 0 rgba(0, 0, 0, 0.30);
+  }
+
+  /* "your turn:" microprompt above vote row — answers a major heuristic
+     finding (zero-context users may not realize the verdict is the AI's
+     and they are being asked to agree/disagree) */
+  .vote-prompt {
+    text-align: center;
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    color: var(--yellow);
+    opacity: 0.75;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin: -8px auto 12px;
+    animation: reasonIn 0.55s 0.35s ease-out backwards;
+  }
+
+  /* Vote button SVG icons — replace emoji glyphs */
+  .vote-btn .icon {
+    display: block;
+    width: 24px;
+    height: 24px;
+    margin: 0 auto 4px;
+    filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.25));
+  }
+
+  /* Vote buttons — chunkier tactile depth */
+  .vote-btn.keep {
+    box-shadow:
+      0 6px 0 var(--blue-deep),
+      0 10px 16px rgba(0, 0, 0, 0.45),
+      inset 0 2px 0 rgba(255, 255, 255, 0.40),
+      inset 0 -2px 0 rgba(0, 0, 0, 0.18);
+  }
+  .vote-btn.toss {
+    box-shadow:
+      0 6px 0 var(--pink-hot),
+      0 10px 16px rgba(0, 0, 0, 0.45),
+      inset 0 2px 0 rgba(255, 255, 255, 0.40),
+      inset 0 -2px 0 rgba(0, 0, 0, 0.18);
+  }
+
+  /* Close × — bump from 38px to 44×44 (WCAG touch target minimum) */
+  .verdict-overlay .close {
+    width: 44px;
+    height: 44px;
+    line-height: 40px;
+    font-size: 22px;
+  }
+
+  /* Focus rings — keyboard-nav accessibility */
+  .shutter:focus-visible,
+  .vote-btn:focus-visible,
+  .next-btn:focus-visible,
+  .verdict-overlay .close:focus-visible {
+    outline: 2px solid var(--yellow);
+    outline-offset: 4px;
+  }
 </style>
 </head>
 <body>
@@ -474,7 +755,6 @@
 <div class="stage">
   <div class="home" id="home">
     <h1 class="title">TRASH<span class="or">or</span>TREASURE</h1>
-    <div class="tagline">should it stay or should it go?</div>
     <label class="shutter" id="shutter">
       <input id="file" type="file" accept="image/*" capture="environment">
     </label>
@@ -484,8 +764,18 @@
 </div>
 
 <div id="processing" class="processing">
+  <button class="cancel" id="procCancel" aria-label="Cancel">×</button>
   <div class="step" id="procStep">UPLOADING</div>
   <div class="msg"  id="procMsg">sending the evidence…</div>
+</div>
+
+<div id="errorOverlay" class="error-overlay">
+  <div class="err-stamp">ERROR</div>
+  <div class="err-msg" id="errMsg">something went wrong</div>
+  <div class="err-actions">
+    <button class="err-btn dismiss" id="errDismiss">× CLOSE</button>
+    <button class="err-btn retry" id="errRetry">TRY AGAIN</button>
+  </div>
 </div>
 
 <div id="verdictOverlay" class="verdict-overlay">
@@ -497,13 +787,18 @@
     <div class="stamp" id="verdictStamp">TOSS</div>
   </div>
   <div class="reason" id="verdictReason"></div>
+  <div class="vote-prompt">your turn</div>
   <div class="vote-row" id="voteRow">
-    <button class="vote-btn keep" data-vote="keep">
-      <span class="emoji">🤚</span>
+    <button class="vote-btn keep" data-vote="keep" aria-label="I'm keeping it">
+      <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M10.5 1.875a1.125 1.125 0 0 1 2.25 0v8.219c.517.162 1.02.382 1.5.659V3.375a1.125 1.125 0 0 1 2.25 0v10.937a4.505 4.505 0 0 0-3.25 2.373 8.963 8.963 0 0 1 4-.935A.75.75 0 0 0 18 15v-2.266a3.368 3.368 0 0 1 .988-2.37 1.125 1.125 0 0 1 1.591 1.59 1.118 1.118 0 0 0-.329.79v3.006h-.005a6 6 0 0 1-1.752 4.007l-1.736 1.736a6 6 0 0 1-4.242 1.757H10.5a7.5 7.5 0 0 1-7.5-7.5V6.375a1.125 1.125 0 0 1 2.25 0v5.519c.46-.452.965-.832 1.5-1.141V3.375a1.125 1.125 0 0 1 2.25 0v6.526c.495-.1.997-.151 1.5-.151V1.875Z" />
+      </svg>
       <span class="lbl" id="keepLabel">I'M KEEPING IT</span>
     </button>
-    <button class="vote-btn toss" data-vote="toss">
-      <span class="emoji">🗑️</span>
+    <button class="vote-btn toss" data-vote="toss" aria-label="Toss it">
+      <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 1 0 1.5.058l.346-9Z" clip-rule="evenodd" />
+      </svg>
       <span class="lbl" id="tossLabel">TOSS IT</span>
     </button>
   </div>
@@ -514,7 +809,7 @@
 
 <div id="toast" class="toast"></div>
 
-<script type="module" src="app.js?v=p1"></script>
+<script type="module" src="app.js?v=p2"></script>
 
 </body>
 </html>

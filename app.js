@@ -11,6 +11,9 @@ const fileInput = $("file");
 const proc      = $("processing");
 const procStep  = $("procStep");
 const procMsg   = $("procMsg");
+const procCancel= $("procCancel");
+const errOver   = $("errorOverlay");
+const errMsgEl  = $("errMsg");
 const overlay   = $("verdictOverlay");
 const photoImg  = $("verdictPhoto");
 const stampEl   = $("verdictStamp");
@@ -26,6 +29,9 @@ let state = {
   vision: null,
   photoDataUrl: null,
 };
+// Monotonic run id — bumped on cancel/retry so stale in-flight results are
+// ignored when they finally come back.
+let runId = 0;
 
 init();
 
@@ -38,6 +44,15 @@ function init() {
     fileInput.value = "";
     setTimeout(() => fileInput.click(), 60);
   });
+  procCancel.addEventListener("click", cancelPipeline);
+  $("errRetry").addEventListener("click", () => {
+    hideError();
+    runPipeline();
+  });
+  $("errDismiss").addEventListener("click", () => {
+    hideError();
+    cancelPipeline();
+  });
 }
 
 async function onFilePicked(e) {
@@ -48,17 +63,24 @@ async function onFilePicked(e) {
     return;
   }
   state.photoDataUrl = await fileToDataURL(f);
+  runPipeline();
+}
+
+async function runPipeline() {
+  const myRun = ++runId;
+  hideError();
 
   showProcessing("UPLOADING", "sending the evidence…");
   let photoUrl;
   try {
     photoUrl = await uploadDataUrl(state.photoDataUrl);
   } catch (err) {
+    if (myRun !== runId) return;
     console.error(err);
-    hideProcessing();
-    toast("upload failed · try again");
+    showError("upload failed · check your connection");
     return;
   }
+  if (myRun !== runId) return;
 
   showProcessing("INSPECTING", "AI is judging you…");
   let vision = null;
@@ -67,12 +89,14 @@ async function onFilePicked(e) {
   } catch (err) {
     console.warn("recognize failed", err);
   }
+  if (myRun !== runId) return;
   state.vision = vision;
 
   // Reveal what was seen for a beat
   if (vision?.labels?.length) {
     showProcessing("WE SEE", "· " + vision.labels.slice(0, 2).join(" · ") + " ·");
     await sleep(800);
+    if (myRun !== runId) return;
   }
 
   showProcessing("DELIBERATING", "weighing the verdict…");
@@ -80,16 +104,26 @@ async function onFilePicked(e) {
   try {
     verdict = await renderVerdict(vision);
   } catch (err) {
+    if (myRun !== runId) return;
     console.error(err);
-    hideProcessing();
-    toast("the court is in recess · try again");
+    showError("AI offline · try again");
     return;
   }
+  if (myRun !== runId) return;
 
   state.verdict = verdict.verdict;
   state.reason  = verdict.reason;
   hideProcessing();
   showVerdict();
+}
+
+function cancelPipeline() {
+  // Bump runId so any in-flight responses are ignored. The underlying
+  // fetch still resolves in background but its result is dropped.
+  runId++;
+  hideProcessing();
+  hideError();
+  fileInput.value = "";
 }
 
 function showVerdict() {
@@ -300,6 +334,15 @@ function showProcessing(step, msg) {
 }
 function hideProcessing() {
   proc.classList.remove("show");
+}
+
+function showError(msg) {
+  errMsgEl.textContent = msg;
+  hideProcessing();
+  errOver.classList.add("show");
+}
+function hideError() {
+  errOver.classList.remove("show");
 }
 
 function toast(msg) {
