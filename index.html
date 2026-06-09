@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="game-uuid" content="ea69fc27-60f8-4f5c-9e0f-6a15e7b8761e" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>Trash or Treasure</title>
+<meta name="theme-color" content="#1A0033">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23FF2D77'/%3E%3Ctext x='50' y='70' text-anchor='middle' font-family='Impact,sans-serif' font-weight='900' font-size='66' fill='%23FFEE00'%3ET%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=VT323&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #1A0033;
+    --bg-darker: #0A0014;
+    --pink: #FF2D77;
+    --pink-hot: #FF1166;
+    --blue: #00B5FF;
+    --blue-deep: #0080CC;
+    --green: #00FF66;
+    --green-dim: #00CC52;
+    --yellow: #FFEE00;
+    --yellow-warm: #FFC400;
+    --cream: #FFF8E7;
+    --shadow: rgba(0, 0, 0, 0.45);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    background: var(--bg-deep);
+    color: var(--cream);
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  body {
+    background:
+      radial-gradient(ellipse at top, rgba(119, 0, 161, 0.4) 0%, transparent 60%),
+      radial-gradient(ellipse at bottom, rgba(255, 45, 119, 0.25) 0%, transparent 50%),
+      var(--bg-deep);
+  }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+  /* ─── Lightbulb marquee frame around viewport ─── */
+  .stage {
+    position: relative;
+    min-height: 100vh;
+    padding: 22px 14px 32px;
+  }
+  .bulbs {
+    position: fixed;
+    inset: 8px;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .bulbs::before, .bulbs::after,
+  .bulbs > span {
+    content: "";
+    position: absolute;
+    background:
+      radial-gradient(circle, var(--yellow) 0%, var(--yellow-warm) 40%, transparent 70%);
+  }
+  .bulbs::before {
+    top: 0; left: 0; right: 0; height: 14px;
+    background-image:
+      radial-gradient(circle, var(--yellow) 4px, transparent 5px);
+    background-size: 22px 14px;
+    background-repeat: repeat-x;
+    background-position: center;
+    animation: marquee 1.4s linear infinite;
+  }
+  .bulbs::after {
+    bottom: 0; left: 0; right: 0; height: 14px;
+    background-image:
+      radial-gradient(circle, var(--yellow) 4px, transparent 5px);
+    background-size: 22px 14px;
+    background-repeat: repeat-x;
+    background-position: center;
+    animation: marquee 1.4s linear infinite reverse;
+  }
+  @keyframes marquee {
+    0%, 100% { opacity: 1; filter: drop-shadow(0 0 6px var(--yellow)); }
+    50% { opacity: 0.45; filter: drop-shadow(0 0 2px var(--yellow-warm)); }
+  }
+
+  /* ─── Home: title + giant shutter ─── */
+  .home {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    padding-top: 36px;
+  }
+  .title {
+    font-family: 'Bungee', cursive;
+    font-size: 38px;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    margin-bottom: 8px;
+    background: linear-gradient(180deg, var(--yellow) 0%, var(--yellow-warm) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow:
+      0 0 28px rgba(255, 238, 0, 0.55);
+    filter: drop-shadow(0 3px 0 var(--pink-hot));
+  }
+  .title .or {
+    font-family: 'Bungee', cursive;
+    font-style: italic;
+    color: var(--cream);
+    -webkit-text-fill-color: var(--cream);
+    font-size: 26px;
+    vertical-align: 4px;
+    margin: 0 4px;
+    text-shadow: 0 0 16px var(--pink);
+  }
+  .tagline {
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--cream);
+    opacity: 0.7;
+    letter-spacing: 0.08em;
+    margin-bottom: 40px;
+  }
+  .shutter {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 30% 30%, #FF6B9F 0%, var(--pink) 35%, var(--pink-hot) 100%);
+    margin: 0 auto;
+    position: relative;
+    border: 6px solid var(--cream);
+    box-shadow:
+      0 12px 0 var(--pink-hot),
+      0 0 40px rgba(255, 45, 119, 0.7),
+      inset 0 -10px 20px rgba(0, 0, 0, 0.25);
+    transition: transform 0.08s, box-shadow 0.08s;
+    cursor: pointer;
+    overflow: hidden;
+  }
+  .shutter:active {
+    transform: translateY(8px);
+    box-shadow:
+      0 4px 0 var(--pink-hot),
+      0 0 30px rgba(255, 45, 119, 0.5),
+      inset 0 -6px 14px rgba(0, 0, 0, 0.3);
+  }
+  .shutter::before {
+    content: "";
+    position: absolute;
+    inset: 28px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--cream) 0%, var(--cream) 55%, transparent 80%);
+    opacity: 0.85;
+  }
+  .shutter::after {
+    content: "";
+    position: absolute;
+    top: 20%;
+    left: 30%;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.7);
+    filter: blur(3px);
+  }
+  .shutter input { display: none; }
+  .shutter-label {
+    margin-top: 28px;
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: var(--yellow);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    animation: glowPulse 2s ease-in-out infinite;
+  }
+  @keyframes glowPulse {
+    0%, 100% { text-shadow: 0 0 6px var(--yellow); }
+    50% { text-shadow: 0 0 22px var(--yellow), 0 0 4px var(--cream); }
+  }
+
+  .hint {
+    margin-top: 14px;
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    color: var(--cream);
+    opacity: 0.55;
+    letter-spacing: 0.06em;
+  }
+
+  /* ─── Processing overlay ─── */
+  .processing {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 0, 20, 0.94);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 24px;
+    text-align: center;
+  }
+  .processing.show { display: flex; }
+  .processing .step {
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--yellow);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    animation: blink 1.2s ease-in-out infinite;
+  }
+  .processing .msg {
+    font-family: 'Bungee', cursive;
+    font-size: 26px;
+    color: var(--cream);
+    max-width: 320px;
+    line-height: 1.1;
+  }
+  @keyframes blink { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+  /* ─── Verdict card ─── */
+  .verdict-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg-darker);
+    z-index: 200;
+    display: none;
+    overflow-y: auto;
+    padding: 24px 16px 16px;
+  }
+  .verdict-overlay.show { display: block; }
+
+  .verdict-overlay .close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--cream);
+    font-size: 20px;
+    line-height: 36px;
+    z-index: 3;
+  }
+  .verdict-overlay .close:active { background: var(--pink); }
+
+  .photo-frame {
+    position: relative;
+    max-width: 340px;
+    margin: 16px auto 24px;
+    aspect-ratio: 1;
+    border: 6px solid var(--yellow);
+    background: var(--bg-deep);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 3px var(--bg-deep),
+      0 0 0 6px var(--pink),
+      0 0 30px rgba(255, 238, 0, 0.45);
+  }
+  .photo-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .photo-frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.45) 50%,
+      transparent 70%);
+    animation: shimmer 2.4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .verdict {
+    text-align: center;
+    margin: 0 auto 18px;
+    max-width: 360px;
+  }
+  .verdict .stamp {
+    display: inline-block;
+    padding: 16px 36px;
+    font-family: 'Bungee', cursive;
+    font-size: 56px;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    border-radius: 8px;
+    transform: rotate(-2deg);
+    animation: stampIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .verdict .stamp.toss {
+    background: var(--pink-hot);
+    color: var(--green);
+    text-shadow:
+      2px 2px 0 var(--bg-deep),
+      0 0 18px rgba(0, 255, 102, 0.6);
+    box-shadow: 0 8px 0 #99004D, 0 0 28px rgba(255, 45, 119, 0.7);
+  }
+  .verdict .stamp.keep {
+    background: var(--blue);
+    color: var(--yellow);
+    text-shadow:
+      2px 2px 0 var(--bg-deep),
+      0 0 18px rgba(255, 238, 0, 0.7);
+    box-shadow: 0 8px 0 var(--blue-deep), 0 0 28px rgba(0, 181, 255, 0.7);
+  }
+  @keyframes stampIn {
+    0% { transform: rotate(-2deg) scale(0.4); opacity: 0; }
+    60% { transform: rotate(-2deg) scale(1.18); opacity: 1; }
+    100% { transform: rotate(-2deg) scale(1); }
+  }
+
+  .reason {
+    text-align: center;
+    margin: 0 auto 32px;
+    max-width: 340px;
+    font-family: 'Inter', sans-serif;
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 1.45;
+    color: var(--cream);
+    padding: 0 8px;
+    animation: reasonIn 0.55s 0.25s ease-out backwards;
+  }
+  .reason .quote {
+    color: var(--yellow);
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    margin: 0 6px;
+  }
+  @keyframes reasonIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .vote-row {
+    display: flex;
+    gap: 12px;
+    max-width: 360px;
+    margin: 0 auto 16px;
+    animation: reasonIn 0.55s 0.45s ease-out backwards;
+  }
+  .vote-btn {
+    flex: 1;
+    min-height: 64px;
+    border-radius: 12px;
+    font-family: 'Bungee', cursive;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    padding: 10px 6px;
+    line-height: 1.1;
+    transition: transform 0.08s, box-shadow 0.08s;
+    position: relative;
+  }
+  .vote-btn .emoji {
+    display: block;
+    font-size: 22px;
+    margin-bottom: 4px;
+  }
+  .vote-btn.keep {
+    background: var(--blue);
+    color: var(--bg-deep);
+    box-shadow: 0 6px 0 var(--blue-deep);
+  }
+  .vote-btn.toss {
+    background: var(--pink);
+    color: var(--bg-deep);
+    box-shadow: 0 6px 0 var(--pink-hot);
+  }
+  .vote-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 var(--blue-deep);
+  }
+  .vote-btn.toss:active { box-shadow: 0 2px 0 var(--pink-hot); }
+  .vote-btn.voted {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--cream);
+    box-shadow: 0 2px 0 rgba(255, 255, 255, 0.05);
+    transform: translateY(2px);
+    opacity: 0.6;
+  }
+
+  .comeback {
+    text-align: center;
+    margin: 0 auto 18px;
+    max-width: 320px;
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: var(--yellow);
+    min-height: 30px;
+    animation: comebackIn 0.4s ease-out;
+  }
+  @keyframes comebackIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .next-btn {
+    display: block;
+    margin: 8px auto 0;
+    padding: 14px 32px;
+    background: transparent;
+    color: var(--cream);
+    border: 2px solid var(--cream);
+    border-radius: 30px;
+    font-family: 'Bungee', cursive;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    box-shadow: 0 0 16px rgba(255, 248, 231, 0.2);
+  }
+  .next-btn:active {
+    background: var(--cream);
+    color: var(--bg-deep);
+  }
+
+  /* ─── Case meta strip (bottom of card) ─── */
+  .case-meta {
+    text-align: center;
+    margin-top: 18px;
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    color: var(--cream);
+    opacity: 0.5;
+    letter-spacing: 0.12em;
+  }
+
+  /* ─── Toast ─── */
+  .toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-deep);
+    border: 2px solid var(--yellow);
+    color: var(--cream);
+    padding: 10px 18px;
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    letter-spacing: 0.08em;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 400;
+    max-width: 90%;
+    text-align: center;
+    border-radius: 8px;
+  }
+  .toast.show { opacity: 1; }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="bulbs"></div>
+
+<div class="stage">
+  <div class="home" id="home">
+    <h1 class="title">TRASH<span class="or">or</span>TREASURE</h1>
+    <div class="tagline">should it stay or should it go?</div>
+    <label class="shutter" id="shutter">
+      <input id="file" type="file" accept="image/*" capture="environment">
+    </label>
+    <div class="shutter-label">TAP TO JUDGE</div>
+    <div class="hint">point camera at anything in your room</div>
+  </div>
+</div>
+
+<div id="processing" class="processing">
+  <div class="step" id="procStep">UPLOADING</div>
+  <div class="msg"  id="procMsg">sending the evidence…</div>
+</div>
+
+<div id="verdictOverlay" class="verdict-overlay">
+  <button class="close" id="closeVerdict">×</button>
+  <div class="photo-frame">
+    <img id="verdictPhoto" alt="">
+  </div>
+  <div class="verdict">
+    <div class="stamp" id="verdictStamp">TOSS</div>
+  </div>
+  <div class="reason" id="verdictReason"></div>
+  <div class="vote-row" id="voteRow">
+    <button class="vote-btn keep" data-vote="keep">
+      <span class="emoji">🤚</span>
+      <span class="lbl" id="keepLabel">I'M KEEPING IT</span>
+    </button>
+    <button class="vote-btn toss" data-vote="toss">
+      <span class="emoji">🗑️</span>
+      <span class="lbl" id="tossLabel">TOSS IT</span>
+    </button>
+  </div>
+  <div class="comeback" id="comeback"></div>
+  <button class="next-btn hidden" id="nextBtn">+ ANOTHER VICTIM</button>
+  <div class="case-meta" id="caseMeta">CASE #00001</div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script type="module" src="app.js?v=p1"></script>
+
+</body>
+</html>
