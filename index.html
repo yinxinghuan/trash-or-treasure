@@ -746,6 +746,256 @@
     outline: 2px solid var(--yellow);
     outline-offset: 4px;
   }
+
+  /* ─── L1 social: inbox chip on home ─── */
+  .inbox-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin: 24px auto 0;
+    padding: 10px 18px 10px 14px;
+    background: var(--yellow);
+    color: var(--bg-deep);
+    border: none;
+    border-radius: 30px;
+    font-family: 'Bungee', cursive;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    box-shadow:
+      0 6px 0 var(--yellow-warm),
+      0 10px 18px rgba(255, 238, 0, 0.35),
+      inset 0 2px 0 rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    animation: chipPulse 2.4s ease-in-out infinite;
+  }
+  .inbox-chip:active {
+    transform: translateY(3px);
+    box-shadow: 0 3px 0 var(--yellow-warm), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  .inbox-glyph {
+    width: 20px;
+    height: 20px;
+    fill: var(--bg-deep);
+    flex-shrink: 0;
+  }
+  .inbox-count {
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    margin-right: 2px;
+  }
+  @keyframes chipPulse {
+    0%, 100% { filter: drop-shadow(0 0 14px rgba(255, 238, 0, 0.45)); }
+    50%      { filter: drop-shadow(0 0 26px rgba(255, 238, 0, 0.85)); }
+  }
+
+  /* ─── Jury-mode header on verdict overlay ─── */
+  .jury-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    max-width: 320px;
+    margin: 4px auto 14px;
+    padding: 10px 16px;
+    background: rgba(255, 238, 0, 0.06);
+    border: 1px dashed rgba(255, 238, 0, 0.40);
+    border-radius: 12px;
+    font-family: 'VT323', monospace;
+    font-size: 17px;
+    color: var(--cream);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .jury-header .jury-avatar {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--bg-deep);
+    border: 1.5px solid var(--yellow);
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+  }
+  .jury-header .jury-avatar.is-initial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--yellow);
+    font-family: 'Bungee', cursive;
+    font-size: 14px;
+  }
+  .jury-header .jury-name {
+    color: var(--yellow);
+    margin-right: 2px;
+  }
+
+  /* ─── After-vote: ASK A FRIEND + ANOTHER VICTIM dual CTA ─── */
+  .after-vote {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin: 6px auto 0;
+    max-width: 360px;
+  }
+  .ask-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 280px;
+    min-height: 52px;
+    padding: 12px 20px;
+    background: var(--yellow);
+    color: var(--bg-deep);
+    border: none;
+    border-radius: 30px;
+    font-family: 'Bungee', cursive;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    box-shadow:
+      0 6px 0 var(--yellow-warm),
+      0 10px 18px rgba(0, 0, 0, 0.4),
+      inset 0 2px 0 rgba(255, 255, 255, 0.4),
+      inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .ask-btn:active {
+    transform: translateY(4px);
+    box-shadow:
+      0 2px 0 var(--yellow-warm),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  .ask-btn .ask-glyph {
+    width: 18px;
+    height: 18px;
+    fill: var(--bg-deep);
+  }
+  .ask-btn:focus-visible {
+    outline: 2px solid var(--cream);
+    outline-offset: 4px;
+  }
+
+  /* ─── Contact picker overlay ─── */
+  .picker-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg-darker);
+    z-index: 350;
+    display: none;
+    flex-direction: column;
+    padding: 22px 16px 32px;
+  }
+  .picker-overlay.show { display: flex; }
+  .picker-close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--cream);
+    font-size: 22px;
+    line-height: 40px;
+    text-align: center;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .picker-header {
+    text-align: center;
+    margin: 12px auto 20px;
+  }
+  .picker-title {
+    font-family: 'Bungee', cursive;
+    font-size: 26px;
+    color: var(--yellow);
+    letter-spacing: 0.04em;
+    filter:
+      drop-shadow(0 2px 0 var(--pink-hot))
+      drop-shadow(0 0 18px rgba(255, 238, 0, 0.4));
+  }
+  .picker-sub {
+    margin-top: 6px;
+    font-family: 'VT323', monospace;
+    font-size: 17px;
+    color: var(--cream);
+    opacity: 0.65;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .picker-list {
+    flex: 1;
+    overflow-y: auto;
+    margin: 0 -4px;
+    padding: 0 4px 8px;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+  .picker-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    color: var(--cream);
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s;
+    font-family: inherit;
+  }
+  .picker-item:active {
+    background: var(--pink-hot);
+    border-color: var(--cream);
+  }
+  .picker-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--bg-deep);
+    border: 2px solid var(--yellow);
+    flex-shrink: 0;
+  }
+  .picker-avatar.is-initial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--yellow);
+    font-family: 'Bungee', cursive;
+    font-size: 18px;
+  }
+  .picker-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    flex: 1;
+  }
+  .picker-loading,
+  .picker-empty {
+    text-align: center;
+    margin: 40px auto;
+    max-width: 280px;
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--cream);
+    opacity: 0.6;
+    letter-spacing: 0.08em;
+  }
+  .picker-item:focus-visible,
+  .picker-close:focus-visible {
+    outline: 2px solid var(--yellow);
+    outline-offset: 3px;
+  }
 </style>
 </head>
 <body>
@@ -760,6 +1010,13 @@
     </label>
     <div class="shutter-label">TAP TO JUDGE</div>
     <div class="hint">point camera at anything in your room</div>
+    <button class="inbox-chip hidden" id="inboxChip" aria-label="Cases waiting for you to judge">
+      <svg class="inbox-glyph" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z" />
+        <path d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z" />
+      </svg>
+      <span><span class="inbox-count" id="inboxCount">0</span> CASES PENDING</span>
+    </button>
   </div>
 </div>
 
@@ -780,6 +1037,10 @@
 
 <div id="verdictOverlay" class="verdict-overlay">
   <button class="close" id="closeVerdict">×</button>
+  <button class="jury-header hidden" id="juryHeader" aria-label="Open friend's profile">
+    <span class="jury-avatar is-initial" id="juryAvatar">?</span>
+    <span><span class="jury-name" id="juryName">someone</span>'s case · your call</span>
+  </button>
   <div class="photo-frame">
     <img id="verdictPhoto" alt="">
   </div>
@@ -803,13 +1064,32 @@
     </button>
   </div>
   <div class="comeback" id="comeback"></div>
-  <button class="next-btn hidden" id="nextBtn">+ ANOTHER VICTIM</button>
+  <div class="after-vote hidden" id="afterVote">
+    <button class="ask-btn" id="askBtn">
+      <svg class="ask-glyph" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z" />
+        <path d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z" />
+      </svg>
+      <span id="askBtnLabel">ASK A FRIEND</span>
+    </button>
+    <button class="next-btn" id="nextBtn">+ ANOTHER VICTIM</button>
+  </div>
   <div class="case-meta" id="caseMeta">CASE #00001</div>
+</div>
+
+<div id="pickerOverlay" class="picker-overlay">
+  <button class="picker-close" id="pickerClose" aria-label="Close">×</button>
+  <div class="picker-header">
+    <div class="picker-title">SECOND OPINION</div>
+    <div class="picker-sub">pick a juror</div>
+  </div>
+  <div class="picker-list" id="pickerList"></div>
 </div>
 
 <div id="toast" class="toast"></div>
 
-<script type="module" src="app.js?v=p2"></script>
+<script src="./aigram-bridge.js?v=1"></script>
+<script type="module" src="app.js?v=L1"></script>
 
 </body>
 </html>
