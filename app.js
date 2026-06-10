@@ -34,6 +34,10 @@ const inboxCount= $("inboxCount");
 const picker    = $("pickerOverlay");
 const pickerList= $("pickerList");
 const pickerClose = $("pickerClose");
+const caseLog   = $("caseLog");
+const caseLogTotal = $("caseLogTotal");
+const caseLogToss  = $("caseLogToss");
+const caseLogKeep  = $("caseLogKeep");
 
 // Aigram bridge (set up by aigram-bridge.js before this module loads)
 const A = window.Aigram || {};
@@ -51,8 +55,6 @@ let state = {
 // Monotonic run id — bumped on cancel/retry so stale in-flight results are
 // ignored when they finally come back.
 let runId = 0;
-
-init();
 
 function init() {
   fileInput.addEventListener("change", onFilePicked);
@@ -73,6 +75,10 @@ function init() {
   inboxChip.addEventListener("click", onInboxChip);
   pickerClose.addEventListener("click", closePicker);
   juryHeader.addEventListener("click", onJuryHeader);
+
+  // Render the running tally from localStorage. Hidden when 0 so the
+  // splash stays clean for first-time players.
+  renderCaseLog();
 
   // Boot social: fetch self name + scan for pending cases. Both deferred
   // so the splash + shutter render first.
@@ -244,6 +250,7 @@ function onVote(e) {
   comebackEl.textContent = pickComeback(aiSaid, agreed);
   if (votePromptEl) votePromptEl.classList.add("hidden");
   afterVote.classList.remove("hidden");
+  incStats(userPick);
 
   // Jury mode: the vote IS the friend's verdict — notify the original
   // sender, dedupe this case locally, advance the pending queue.
@@ -739,3 +746,49 @@ function markJudged(caseId) {
 function escapeAttr(s) {
   return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
 }
+
+// ─── CASE LOG · per-device running tally rendered on home ──────────────
+
+const STATS_LS_KEY = "tot:stats";
+
+function loadStats() {
+  try {
+    const raw = localStorage.getItem(STATS_LS_KEY);
+    if (!raw) return { total: 0, toss: 0, keep: 0 };
+    const s = JSON.parse(raw);
+    return {
+      total: Number(s.total) || 0,
+      toss:  Number(s.toss)  || 0,
+      keep:  Number(s.keep)  || 0,
+    };
+  } catch {
+    return { total: 0, toss: 0, keep: 0 };
+  }
+}
+
+function incStats(pick) {
+  const s = loadStats();
+  s.total += 1;
+  if (pick === "TOSS")      s.toss += 1;
+  else if (pick === "KEEP") s.keep += 1;
+  try { localStorage.setItem(STATS_LS_KEY, JSON.stringify(s)); } catch { /* full */ }
+  renderCaseLog(s);
+}
+
+function renderCaseLog(s) {
+  s = s || loadStats();
+  if (!s.total) {
+    caseLog.classList.add("hidden");
+    return;
+  }
+  caseLogTotal.textContent = String(s.total);
+  caseLogToss.textContent  = String(s.toss);
+  caseLogKeep.textContent  = String(s.keep);
+  caseLog.classList.remove("hidden");
+}
+
+// Kick everything off AFTER all module-level const/lets above are initialized.
+// (Function decls hoist; const/let live in the TDZ until execution reaches
+// them — calling init() at the top of the file made loadStats() throw a
+// silent ReferenceError on STATS_LS_KEY, caught by its own try/catch.)
+init();
