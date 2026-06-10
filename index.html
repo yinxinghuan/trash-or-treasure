@@ -103,10 +103,10 @@
   }
   .title {
     font-family: 'Bungee', cursive;
-    font-size: 38px;
-    line-height: 1;
-    letter-spacing: 0.01em;
-    margin-bottom: 8px;
+    font-size: 46px;
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    margin-bottom: 36px;
     background: linear-gradient(180deg, var(--yellow) 0%, var(--yellow-warm) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -115,15 +115,20 @@
       0 0 28px rgba(255, 238, 0, 0.55);
     filter: drop-shadow(0 3px 0 var(--pink-hot));
   }
-  .title .or {
-    font-family: 'Bungee', cursive;
+  .title .t-line {
+    display: block;
+  }
+  .title .t-or {
+    display: block;
     font-style: italic;
     color: var(--cream);
     -webkit-text-fill-color: var(--cream);
-    font-size: 26px;
-    vertical-align: 4px;
-    margin: 0 4px;
+    font-size: 22px;
+    margin: 6px 0 4px;
+    letter-spacing: 0.10em;
     text-shadow: 0 0 16px var(--pink);
+    /* sit slightly inset from the wordmark for a label-strip feel */
+    opacity: 0.92;
   }
   .tagline {
     font-family: 'VT323', monospace;
@@ -1048,7 +1053,11 @@
 
 <div class="stage">
   <div class="home" id="home">
-    <h1 class="title">TRASH<span class="or">or</span>TREASURE</h1>
+    <h1 class="title">
+      <span class="t-line">TRASH</span>
+      <span class="t-or">or</span>
+      <span class="t-line">TREASURE</span>
+    </h1>
     <label class="shutter" id="shutter">
       <input id="file" type="file" accept="image/*" capture="environment">
     </label>
@@ -1142,7 +1151,7 @@
 <div id="toast" class="toast"></div>
 
 <script src="./aigram-bridge.js?v=1"></script>
-<script type="module" src="app.js?v=L1c"></script>
+<script type="module" src="app.js?v=L1d"></script>
 
 </body>
 </html>
