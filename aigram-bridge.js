@@ -24,7 +24,12 @@
 (function () {
   'use strict';
 
-  var params    = new URLSearchParams(window.location.search);
+  // Defensive parse: if the launch URL already had a query (?v=…) some
+  // native clients append platform params with a second '?' instead of
+  // '&' ("?v=v9?api_origin=…"), which hides api_origin/telegram_id from
+  // URLSearchParams. Normalize every embedded '?' to '&' before parsing.
+  var rawQuery  = window.location.search.replace(/^\?/, '').replace(/\?/g, '&');
+  var params    = new URLSearchParams(rawQuery);
   var rawOrigin = params.get('api_origin');
   var apiOrigin = rawOrigin ? decodeURIComponent(rawOrigin) : null;
   var telegramId = params.get('telegram_id') || null;
